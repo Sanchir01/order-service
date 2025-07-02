@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/Sanchir01/order-service/internal/http"
 	"log/slog"
 	"os"
@@ -40,8 +39,6 @@ func main() {
 	}
 
 	app.Lg.Info("started server", app.Cfg.HTTPServer.Port)
-	fmt.Println("hello sanchir")
-	fmt.Println("hello world")
 	go func() {
 		if err := app.HttpSrv.Run(httphandlers.StartHTTTPHandlers(app.Handlers, app.Cfg.Domain, app.Lg)); err != nil {
 			if !errors.Is(err, context.Canceled) {

@@ -1,9 +1,12 @@
 PHONY:
 SILENT:
 include .env.prod
+
 MIGRATION_NAME ?= new_migration
 
-DB_CONN_PROD = "host=localhost user=postgres password=postgres port=5439 dbname=postgres sslmode=disable"
+DB_CONN_DEV = "host=localhost user=postgres password=postgres port=5441 dbname=order sslmode=disable"
+
+FOLDER_PG= migrations/pg
 
 swag:
 	swag init -g cmd/main/main.go
@@ -12,36 +15,39 @@ build:
 	go build -o ./.bin/main ./cmd/main/main.go
 run: build
 	./.bin/main
+swag:
+	swag init -g cmd/main/main.go
 
 migrations-up:
-	goose -dir migrations postgres "host=localhost user=postgres password=test port=5439 dbname=test sslmode=disable"  up
+	goose -dir $(FOLDER_PG) postgres $(DB_CONN_DEV)   up
 
 migrations-down:
-	goose -dir migrations postgres  "host=localhost user=postgres password=test port=5439 dbname=test sslmode=disable"  down
+	goose -dir $(FOLDER_PG) postgres $(DB_CONN_DEV)   down
 
 
 migrations-status:
-	goose -dir migrations postgres  "host=localhost user=postgres password=test port=5439 dbname=test sslmode=disable" status
+	goose -dir $(FOLDER_PG) postgres $(DB_CONN_DEV)  status
 
 migrations-new:
-	goose -dir migrations create $(MIGRATION_NAME) sql
+	goose -dir $(FOLDER_PG) create $(MIGRATION_NAME) sql
 
 migrations-up-prod:
-	goose -dir migrations postgres $(DB_CONN_PROD) up
+	goose -dir $(FOLDER_PG) postgres "$(DB_CONN_PROD)" up
 
 migrations-down-prod:
-	goose -dir migrations postgres $(DB_CONN_PROD) down
+	goose -dir $(FOLDER_PG) postgres "$(DB_CONN_PROD)" down
 
 migrations-status-prod:
-	goose -dir migrations postgres $(DB_CONN_PROD) status
+	goose -dir $(FOLDER_PG) postgres "$(DB_CONN_PROD)" status
 
 docker-build:
-	docker build -t users-info .
+	docker build -t candles .
 
 docker:
 	docker-compose  up -d
 
 docker-app: docker-build docker
+
 
 compose-prod:
 	docker compose -f docker-compose.prod.yaml up --build -d

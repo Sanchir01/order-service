@@ -1,0 +1,21 @@
+basePath: /api/v1
+host: localhost:5000
+info:
+  contact:
+    name: GitHub
+    url: https://github.com/Sanchir01
+  description: This is a sample server seller
+  termsOfService: http://swagger.io/terms/
+  title: "\U0001F680 Currency Wallet"
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  AccessTokenCookie:
+    in: cookie
+    name: accessToken
+    type: apiKey
+  RefreshTokenCookie:
+    in: cookie
+    name: refreshToken
+    type: apiKey
+swagger: "2.0"

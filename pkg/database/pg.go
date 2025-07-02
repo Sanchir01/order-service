@@ -19,7 +19,7 @@ func PGXNew(cfg *config.Config, ctx context.Context) (*pgxpool.Pool, error) {
 	switch cfg.Env {
 	case "development":
 		dsn = fmt.Sprintf(
-			"postgres://postgres:postgres@localhost:5441/currency-wallet?sslmode=disable",
+			"postgres://postgres:postgres@localhost:5441/order?sslmode=disable",
 		)
 	case "production":
 		dsn = fmt.Sprintf(
@@ -46,7 +46,7 @@ func PGXNew(cfg *config.Config, ctx context.Context) (*pgxpool.Pool, error) {
 	}
 	var test int
 	if err := pool.QueryRow(ctx, "SELECT 1").Scan(&test); err != nil {
-		log.Printf("Ошибка подключения к БД: %v", err)
+		log.Printf("Ошибка подключения к БД: %v", err.Error())
 		return nil, err
 	}
 	return pool, nil

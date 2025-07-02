@@ -1,7 +1,13 @@
 package app
 
-type Services struct{}
+import "github.com/Sanchir01/order-service/internal/feature/order"
 
-func NewServices() *Services {
-	return &Services{}
+type Services struct {
+	OrderService *order.Service
+}
+
+func NewServices(r *Repositories) *Services {
+	return &Services{
+		OrderService: order.NewService(r.OrderRepository),
+	}
 }

@@ -17,9 +17,7 @@ func StartHTTTPHandlers(handlers *app.Handlers, domain string, l *slog.Logger) h
 	router := chi.NewRouter()
 	custommiddleware(router, l)
 	router.Route("/api/v1", func(r chi.Router) {
-		r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("helloworl"))
-		})
+		r.Get("/hello", handlers.OrderHandler.HelloWorld)
 	})
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),

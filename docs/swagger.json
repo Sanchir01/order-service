@@ -1,0 +1,28 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server seller",
+        "title": "🚀 Currency Wallet",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "GitHub",
+            "url": "https://github.com/Sanchir01"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "AccessTokenCookie": {
+            "type": "apiKey",
+            "name": "accessToken",
+            "in": "cookie"
+        },
+        "RefreshTokenCookie": {
+            "type": "apiKey",
+            "name": "refreshToken",
+            "in": "cookie"
+        }
+    }
+}

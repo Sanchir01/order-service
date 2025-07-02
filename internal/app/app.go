@@ -33,15 +33,16 @@ func NewApp(ctx context.Context) (*App, error) {
 	prometheusserver := httpserver.NewHTTPServer(cfg.Prometheus.Host, cfg.Prometheus.Port, cfg.Prometheus.Timeout,
 		cfg.Prometheus.IdleTimeout)
 
-	repo := NewRepositories()
+	repo := NewRepositories(database, l)
 	service := NewServices(repo)
-
+	handler := NewHandlers(service)
 	app := &App{
 		Cfg:           cfg,
 		Lg:            l,
 		HttpSrv:       httpsrv,
 		PrometheusSrv: prometheusserver,
 		DB:            database,
+		Handlers:      handler,
 	}
 	return app, nil
 }
