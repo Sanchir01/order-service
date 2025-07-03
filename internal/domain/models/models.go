@@ -29,32 +29,32 @@ type Payment struct {
 	CustomFee    int    `json:"custom_fee"`
 }
 type Item struct {
-	ChrtID      int    `json:"chrt_id"`
-	TrackNumber string `json:"track_number"`
-	Price       int    `json:"price"`
-	RID         string `json:"rid"`
-	Name        string `json:"name"`
-	Sale        int    `json:"sale"`
-	Size        string `json:"size"`
-	TotalPrice  int    `json:"total_price"`
-	NmID        int    `json:"nm_id"`
-	Brand       string `json:"brand"`
-	Status      int    `json:"status"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	TrackNumber string    `json:"track_number" db:"track_number"`
+	Price       int       `json:"price" db:"price"`
+	Name        string    `json:"name" db:"name"`
+	Sale        string    `json:"sale" db:"sale"`
+	Size        int       `json:"size" db:"size"`
+	TotalPrice  int       `json:"total_price" db:"total_price"`
+	NmID        int       `json:"nm_id" db:"nm_id"`
+	Brand       string    `json:"brand" db:"brand"`
+	Status      int       `json:"status" db:"status"`
 }
 type Order struct {
 	ID                string    `json:"id"`
 	TrackNumber       string    `json:"track_number"`
 	Entry             string    `json:"entry"`
 	Locale            string    `json:"locale"`
-	InternalSignature *string   `json:"internal_signature,omitempty"`
-	CustomerID        *string   `json:"customer_id,omitempty"`
-	DeliveryService   *string   `json:"delivery_service,omitempty"`
-	ShardKey          *int      `json:"shardkey,omitempty"`
-	SmID              *int      `json:"sm_id,omitempty"`
+	InternalSignature string    `json:"internal_signature,omitempty"`
+	CustomerID        string    `json:"customer_id,omitempty"`
+	DeliveryService   string    `json:"delivery_service,omitempty"`
+	ShardKey          int       `json:"shardkey,omitempty"`
+	SmID              int       `json:"sm_id,omitempty"`
 	DateCreated       time.Time `json:"date_created"`
 }
+
 type OrderFull struct {
-	OrderUID          string    `json:"order_uid"`
+	OrderUID          string    `json:"id"`
 	TrackNumber       string    `json:"track_number"`
 	Entry             string    `json:"entry"`
 	Delivery          Delivery  `json:"delivery"`
@@ -67,5 +67,4 @@ type OrderFull struct {
 	ShardKey          string    `json:"shardkey"`
 	SmID              int       `json:"sm_id"`
 	DateCreated       time.Time `json:"date_created"`
-	OofShard          string    `json:"oof_shard"`
 }

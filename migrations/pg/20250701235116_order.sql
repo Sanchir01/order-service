@@ -7,11 +7,11 @@ CREATE TABLE IF NOT EXISTS  orders(
     track_number TEXT NOT NULL ,
     entry TEXT NOT NULL,
     locale TEXT NOT NULL,
-    internal_signature TEXT,
-    customer_id TEXT,
-    delivery_service TEXT,
-    shardkey INT,
-    sm_id INT,
+    internal_signature TEXT NOT NULL ,
+    customer_id TEXT NOT NULL,
+    delivery_service TEXT NOT NULL,
+    shardkey INT NOT NULL,
+    sm_id INT NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- +goose StatementEnd

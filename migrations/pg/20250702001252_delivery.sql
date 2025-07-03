@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS delivery (
                                         order_uid UUID UNIQUE NOT NULL,
                                         name TEXT NOT NULL,
                                         phone TEXT NOT NULL,
-                                        zip INT,
+                                        zip INT NOT NULL ,
                                         city TEXT NOT NULL,
                                         address TEXT NOT NULL,
                                         region TEXT NOT NULL,

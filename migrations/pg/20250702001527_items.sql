@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS  items(
 );
 CREATE TABLE order_items (
                              id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-                             order_uid UUID UNIQUE NOT NULL ,
+                             order_uid UUID NOT NULL ,
                              item_id UUID NOT NULL,
                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              FOREIGN KEY (order_uid) REFERENCES orders(id) ON DELETE CASCADE,

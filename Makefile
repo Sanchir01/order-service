@@ -15,8 +15,6 @@ build:
 	go build -o ./.bin/main ./cmd/main/main.go
 run: build
 	./.bin/main
-swag:
-	swag init -g cmd/main/main.go
 
 migrations-up:
 	goose -dir $(FOLDER_PG) postgres $(DB_CONN_DEV)   up
