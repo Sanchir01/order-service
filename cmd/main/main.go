@@ -12,7 +12,7 @@ import (
 	apps "github.com/Sanchir01/order-service/internal/app"
 )
 
-// @title 🚀 Currency Wallet
+// @title 🚀 Order Service
 // @version         1.0
 // @description This is a sample server seller
 // @termsOfService  http://swagger.io/terms/
@@ -39,6 +39,7 @@ func main() {
 	}
 
 	app.Lg.Info("started server", app.Cfg.HTTPServer.Port)
+
 	go func() {
 		if err := app.HttpSrv.Run(httphandlers.StartHTTTPHandlers(app.Handlers, app.Cfg.Domain, app.Lg)); err != nil {
 			if !errors.Is(err, context.Canceled) {
@@ -58,6 +59,9 @@ func main() {
 	<-ctx.Done()
 	if err := app.HttpSrv.Gracefull(ctx); err != nil {
 		app.Lg.Error("server gracefull")
+	}
+	if err := app.PrometheusSrv.Gracefull(ctx); err != nil {
+		app.Lg.Error("server prometheus gracefull")
 	}
 	if err := app.DB.Close(); err != nil {
 		app.Lg.Error("Close database", slog.String("error", err.Error()))

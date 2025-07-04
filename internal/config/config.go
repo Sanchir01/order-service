@@ -25,9 +25,11 @@ type Kafka struct {
 }
 
 type Producer struct {
-	Retries int      `yaml:"retries"`
-	Topic   []string `yaml:"topic"`
-	Broke   []string `yaml:"brokers"`
+	Retries     int           `yaml:"retries"`
+	Topic       []string      `yaml:"topic"`
+	Broke       []string      `yaml:"brokers"`
+	MaxMessages uint64        `yaml:"max_messages"`
+	Timeout     time.Duration `yaml:"timeout"`
 }
 type Redis struct {
 	Host     string `yaml:"host"`

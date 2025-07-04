@@ -1,4 +1,115 @@
 basePath: /api/v1
+definitions:
+  models.Delivery:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      order_uid:
+        type: string
+      phone:
+        type: string
+      region:
+        type: string
+      zip:
+        type: integer
+    type: object
+  models.Item:
+    properties:
+      brand:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nm_id:
+        type: integer
+      price:
+        type: integer
+      sale:
+        type: string
+      size:
+        type: integer
+      status:
+        type: integer
+      total_price:
+        type: integer
+      track_number:
+        type: string
+    type: object
+  models.OrderFull:
+    properties:
+      customer_id:
+        type: string
+      date_created:
+        type: string
+      delivery:
+        $ref: '#/definitions/models.Delivery'
+      delivery_service:
+        type: string
+      entry:
+        type: string
+      id:
+        type: string
+      internal_signature:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/models.Item'
+        type: array
+      locale:
+        type: string
+      payment:
+        $ref: '#/definitions/models.Payment'
+      shardkey:
+        type: string
+      sm_id:
+        type: integer
+      track_number:
+        type: string
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: integer
+      bank:
+        type: string
+      currency:
+        type: string
+      custom_fee:
+        type: integer
+      delivery_cost:
+        type: integer
+      goods_total:
+        type: integer
+      payment_dt:
+        type: integer
+      provider:
+        type: string
+      request_id:
+        type: string
+      transaction:
+        type: string
+    type: object
+  order.GetOrderByIdResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.OrderFull'
+      response:
+        $ref: '#/definitions/utils.Response'
+    type: object
+  utils.Response:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+    type: object
 host: localhost:5000
 info:
   contact:
@@ -6,9 +117,42 @@ info:
     url: https://github.com/Sanchir01
   description: This is a sample server seller
   termsOfService: http://swagger.io/terms/
-  title: "\U0001F680 Currency Wallet"
+  title: "\U0001F680 Order Service"
   version: "1.0"
-paths: {}
+paths:
+  /order/id:
+    get:
+      consumes:
+      - application/json
+      description: get order by id
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/order.GetOrderByIdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: GetOrderById
+      tags:
+      - order
 securityDefinitions:
   AccessTokenCookie:
     in: cookie

@@ -18,7 +18,228 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/order/id": {
+            "get": {
+                "description": "get order by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "GetOrderById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order.GetOrderByIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Delivery": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order_uid": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Item": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nm_id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "sale": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "total_price": {
+                    "type": "integer"
+                },
+                "track_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OrderFull": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "date_created": {
+                    "type": "string"
+                },
+                "delivery": {
+                    "$ref": "#/definitions/models.Delivery"
+                },
+                "delivery_service": {
+                    "type": "string"
+                },
+                "entry": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "internal_signature": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Item"
+                    }
+                },
+                "locale": {
+                    "type": "string"
+                },
+                "payment": {
+                    "$ref": "#/definitions/models.Payment"
+                },
+                "shardkey": {
+                    "type": "string"
+                },
+                "sm_id": {
+                    "type": "integer"
+                },
+                "track_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Payment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "bank": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "custom_fee": {
+                    "type": "integer"
+                },
+                "delivery_cost": {
+                    "type": "integer"
+                },
+                "goods_total": {
+                    "type": "integer"
+                },
+                "payment_dt": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "transaction": {
+                    "type": "string"
+                }
+            }
+        },
+        "order.GetOrderByIdResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.OrderFull"
+                },
+                "response": {
+                    "$ref": "#/definitions/utils.Response"
+                }
+            }
+        },
+        "utils.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "AccessTokenCookie": {
             "type": "apiKey",
@@ -39,7 +260,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:5000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "🚀 Currency Wallet",
+	Title:            "🚀 Order Service",
 	Description:      "This is a sample server seller",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

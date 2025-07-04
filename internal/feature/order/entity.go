@@ -2,6 +2,7 @@ package order
 
 import (
 	"github.com/Sanchir01/order-service/internal/domain/models"
+	"github.com/Sanchir01/order-service/pkg/utils"
 	"github.com/google/uuid"
 	"time"
 )
@@ -64,4 +65,9 @@ type ItemDB struct {
 	NmID        int       `db:"nm_id"`
 	Brand       string    `db:"brand"`
 	Status      int       `db:"status"`
+}
+
+type GetOrderByIdResponse struct {
+	Response utils.Response
+	Data     models.OrderFull
 }

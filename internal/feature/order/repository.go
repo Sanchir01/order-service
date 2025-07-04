@@ -140,7 +140,6 @@ func (r *Repository) GetOrderById(ctx context.Context, id uuid.UUID) (*models.Or
 	}
 
 	order.Items = items
-	r.log.Info("Get order by order_uid", "data", order)
 	return &order, nil
 }
 
