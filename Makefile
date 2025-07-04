@@ -16,6 +16,10 @@ build:
 run: build
 	./.bin/main
 
+consumer:
+	go build -o ./.bin/cons  ./cmd/kafkaconsumer/main.go
+	./.bin/cons
+
 migrations-up:
 	goose -dir $(FOLDER_PG) postgres $(DB_CONN_DEV)   up
 

@@ -16,6 +16,6 @@ type Services struct {
 func NewServices(r *Repositories, databases *db.Database, l *slog.Logger, producer *kafkaclient.Producer) *Services {
 	return &Services{
 		OrderService: order.NewService(r.OrderRepository, databases.PrimaryDB, l),
-		EventService: events.NewEventService(l, r.EventRepository, producer),
+		EventService: events.NewEventService(l, r.EventRepository, producer, databases.PrimaryDB),
 	}
 }

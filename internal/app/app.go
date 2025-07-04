@@ -19,6 +19,7 @@ type App struct {
 	DB            *db.Database
 	Services      *Services
 	Handlers      *Handlers
+	Consumer      *kafkaclient.KafkaConsumer
 }
 
 func NewApp(ctx context.Context) (*App, error) {
@@ -34,11 +35,16 @@ func NewApp(ctx context.Context) (*App, error) {
 		cfg.HTTPServer.Timeout, cfg.HTTPServer.IdleTimeout)
 	prometheusserver := httpserver.NewHTTPServer(cfg.Prometheus.Host, cfg.Prometheus.Port, cfg.Prometheus.Timeout,
 		cfg.Prometheus.IdleTimeout)
+
 	kaf, err := kafkaclient.NewProducer(cfg.Kafka.Notification.Broke, cfg.Kafka.Notification.Topic[0], cfg.Kafka.Notification.Retries, ctx)
+	if err != nil {
+		return nil, err
+	}
 	repo := NewRepositories(database, l)
 	service := NewServices(repo, database, l, kaf)
 	handler := NewHandlers(service, l)
-	service.EventService.StartCreateEvent(ctx, cfg.Kafka.Notification.Timeout, cfg.Kafka.Notification.MaxMessages, cfg.Kafka.Notification.Topic[0])
+
+	consumer, err := kafkaclient.NewConsumer(cfg.Kafka.Consumer.Topic[0], cfg.Kafka.Consumer.Broke[0], cfg.Kafka.Consumer.GroupId, l, service.OrderService)
 	if err := profiling.InitPyroscope(); err != nil {
 		return nil, err
 	}
@@ -49,6 +55,7 @@ func NewApp(ctx context.Context) (*App, error) {
 		PrometheusSrv: prometheusserver,
 		DB:            database,
 		Handlers:      handler,
+		Consumer:      consumer,
 	}
 	return app, nil
 }

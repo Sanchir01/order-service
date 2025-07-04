@@ -71,3 +71,9 @@ type GetOrderByIdResponse struct {
 	Response utils.Response
 	Data     models.OrderFull
 }
+type FullOrderMessage struct {
+	Order    CreateOrderProps    `json:"order"`
+	Payment  CreatePaymentProps  `json:"payment"`
+	Delivery CreateDeliveryProps `json:"delivery"`
+	ItemsIds []uuid.UUID         `json:"items_id"`
+}

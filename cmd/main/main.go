@@ -37,7 +37,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	app.Lg.Info("started server", app.Cfg.HTTPServer.Port)
 
 	go func() {
@@ -54,6 +53,12 @@ func main() {
 				app.Lg.Error("Listen prometheus server error", slog.String("error", err.Error()))
 				return
 			}
+		}
+	}()
+	go func() {
+		if err := app.Consumer.Consume(ctx); err != nil {
+			app.Lg.Error("Listen consumer server error", slog.String("error", err.Error()))
+			return
 		}
 	}()
 	<-ctx.Done()

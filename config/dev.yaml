@@ -10,13 +10,19 @@ database:
 kafka:
   notification:
     retries: 5
-    group_id: "notification"
     topic:
       - "notification"
     brokers:
       - "localhost:9092"
     max_messages: 100
     timeout: "3s"
+
+  consumer:
+    topic:
+      - "notification"
+    group_id: "order.send"
+    brokers:
+      - "localhost:9092"
 
 redis:
   host: "localhost"

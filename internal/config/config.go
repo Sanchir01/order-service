@@ -22,6 +22,7 @@ type Config struct {
 }
 type Kafka struct {
 	Notification Producer `yaml:"notification"`
+	Consumer     Consumer `yaml:"consumer"`
 }
 
 type Producer struct {
@@ -30,6 +31,11 @@ type Producer struct {
 	Broke       []string      `yaml:"brokers"`
 	MaxMessages uint64        `yaml:"max_messages"`
 	Timeout     time.Duration `yaml:"timeout"`
+}
+type Consumer struct {
+	Topic   []string `yaml:"topic"`
+	Broke   []string `yaml:"brokers"`
+	GroupId string   `yaml:"group_id"`
 }
 type Redis struct {
 	Host     string `yaml:"host"`

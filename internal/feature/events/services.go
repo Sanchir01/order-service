@@ -3,9 +3,11 @@ package events
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/Sanchir01/order-service/pkg/logger"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log/slog"
 	"time"
 )
@@ -19,17 +21,59 @@ type EventSender interface {
 	Produce(message string, value []byte) error
 }
 type Service struct {
-	log  *slog.Logger
-	repo EventRepositoryInterface
-	kaf  EventSender
+	log       *slog.Logger
+	primarydb *pgxpool.Pool
+	repo      EventRepositoryInterface
+	kaf       EventSender
 }
 
-func NewEventService(log *slog.Logger, repo EventRepositoryInterface, kaf EventSender) *Service {
+func NewEventService(log *slog.Logger, repo EventRepositoryInterface, kaf EventSender, primarydb *pgxpool.Pool) *Service {
 	return &Service{
 		log,
+		primarydb,
 		repo,
 		kaf,
 	}
+}
+
+func (e *Service) CreateEvent(ctx context.Context, eventType, payload string) (*uuid.UUID, error) {
+	const op = "Wallet.Handler.GetAllCurrency"
+	log := e.log.With(slog.String("op", op))
+
+	conn, err := e.primarydb.Acquire(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		log.Error("tx error", err.Error())
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			rollbackErr := tx.Rollback(ctx)
+			if rollbackErr != nil {
+				err = errors.Join(err, rollbackErr)
+				log.Error("rollback error", err.Error())
+			}
+		}
+	}()
+
+	eventid, err := e.repo.CreateEvent(ctx, eventType, payload, tx)
+	if err != nil {
+		log.Error("failed create event", err.Error())
+		return nil, err
+	}
+	log.Info("eventid", "id", eventid)
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return &eventid, nil
 }
 
 func (e *Service) StartCreateEvent(ctx context.Context, handlePeriod time.Duration, limitEvents uint64, topic string) {
