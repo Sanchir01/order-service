@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/Sanchir01/order-service/internal/domain/models"
@@ -9,20 +10,29 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"log"
 	"log/slog"
+	"time"
 )
 
 type Repository struct {
 	primarydb *pgxpool.Pool
+	redisDB   *redis.Client
 	log       *slog.Logger
 }
 
-func NewRepository(primarydb *pgxpool.Pool, l *slog.Logger) *Repository {
-	return &Repository{primarydb: primarydb, log: l}
+func NewRepository(primarydb *pgxpool.Pool, redisDB *redis.Client, l *slog.Logger) *Repository {
+	return &Repository{
+		primarydb: primarydb, log: l, redisDB: redisDB,
+	}
 }
 
 func (r *Repository) GetOrderById(ctx context.Context, id uuid.UUID) (*models.OrderFull, error) {
+	redisorderdata, err := r.GetOrderItemsByRedis(ctx, id)
+	if err == nil {
+		return redisorderdata, nil
+	}
 	conn, err := r.primarydb.Acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -140,6 +150,9 @@ func (r *Repository) GetOrderById(ctx context.Context, id uuid.UUID) (*models.Or
 	}
 
 	order.Items = items
+	if err := r.SetOrderItemsToRedis(ctx, &order); err != nil {
+		r.log.Error("fail to save order to redis", "err", err.Error())
+	}
 	return &order, nil
 }
 
@@ -271,4 +284,32 @@ func (r *Repository) CreateOrderItems(
 	}
 	log.Printf("ids items: %v", ids)
 	return ids, nil
+}
+
+func (r *Repository) GetOrderItemsByRedis(ctx context.Context, orderid uuid.UUID) (*models.OrderFull, error) {
+	res, err := r.redisDB.Get(ctx, fmt.Sprintf("order_items_%s", orderid.String())).Result()
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("redis get error: %w", err)
+	}
+	var order models.OrderFull
+	if err := json.Unmarshal([]byte(res), &order); err != nil {
+		return nil, fmt.Errorf("json unmarshal error: %w", err)
+	}
+	return &order, nil
+}
+func (r *Repository) SetOrderItemsToRedis(ctx context.Context, order *models.OrderFull) error {
+	key := fmt.Sprintf("order_items_%s", order.OrderUID)
+
+	data, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+
+	return r.redisDB.Set(ctx, key, data, 10*time.Minute).Err()
 }

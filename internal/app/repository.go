@@ -14,7 +14,7 @@ type Repositories struct {
 
 func NewRepositories(databases *db.Database, l *slog.Logger) *Repositories {
 	return &Repositories{
-		OrderRepository: order.NewRepository(databases.PrimaryDB, l),
+		OrderRepository: order.NewRepository(databases.PrimaryDB, databases.RedisDB, l),
 		EventRepository: events.NewRepository(databases.PrimaryDB),
 	}
 }
